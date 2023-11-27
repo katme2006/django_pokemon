@@ -1,18 +1,20 @@
 from django.db import models
 from django.utils import timezone
+from django.core import validators as v
+from .validators import validate_name
 
 # Create your models here.
 class Pokemon(models.Model):
     # CharField is a character field and has a default max length of 255 characters
-    name = models.CharField(max_length=200, unique=True, blank=False, null=False)
+    name = models.CharField(max_length=200, blank=False, null=False, validators=[validate_name])
     # IntegerField will allow only solid numerical values as input
-    level = models.IntegerField(default=1)
+    level = models.IntegerField(default=1, validators=[v.MinValueValidator(1), v.MaxValueValidator(100)])
     # We are providing a default to someone born Jan 1st 2008
     date_encountered = models.DateField(default="2008-01-01")
     # If a value is not provided we are stating the last time this pokemon was at school was upon creation of the classes instance.
     date_captured = models.DateTimeField(default=timezone.now)
     # If no value is provided the Pokemon description will be "Unknown"
-    description = models.TextField(default="Unknown")
+    description = models.TextField(default="Unknown", validators =[v.MinLengthValidator(7), v.MaxLengthValidator(150)])
     # We must catch them all.
     captured = models.BooleanField(default = False)
 
